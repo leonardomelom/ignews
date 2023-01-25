@@ -2,7 +2,20 @@ import { GetStaticProps } from 'next'
 import Head from 'next/head'
 import styles from './styles.module.scss'
 import { createClient } from '../../services/prismic'
-export default function Posts() {
+import { RichText } from 'prismic-dom'
+
+type Post = {
+  slug: string
+  title: string
+  excerpt: string
+  updatedAt: string
+}
+
+interface PostsProps{
+  posts: Post[]
+}
+
+export default function Posts({ posts }: PostsProps) {
   return (
    <>
     <Head>
@@ -11,39 +24,20 @@ export default function Posts() {
 
     <main className={styles.container}>
         <div className={styles.postList}>
-          <a href="">
-            <time>
-              12 de março de 2023
-            </time>
-            <strong>
-            Mastering TypeScript: 21 Best Practices for Improved Code Quality
-            </strong>
-            <p>
-            TypeScript is a widely used, open-source programming language that is perfect for modern development. With its advanced type system, TypeScript allows developers to write code that is more robust, maintainable, and scalable.
-            </p>
-          </a>
-          <a href="">
-            <time>
-              12 de março de 2023
-            </time>
-            <strong>
-            Mastering TypeScript: 21 Best Practices for Improved Code Quality
-            </strong>
-            <p>
-            TypeScript is a widely used, open-source programming language that is perfect for modern development. With its advanced type system, TypeScript allows developers to write code that is more robust, maintainable, and scalable.
-            </p>
-          </a>
-          <a href="">
-            <time>
-              12 de março de 2023
-            </time>
-            <strong>
-            Mastering TypeScript: 21 Best Practices for Improved Code Quality
-            </strong>
-            <p>
-            TypeScript is a widely used, open-source programming language that is perfect for modern development. With its advanced type system, TypeScript allows developers to write code that is more robust, maintainable, and scalable.
-            </p>
-          </a>
+         {posts.map(post =>(
+           <a key={post.slug} href="">
+           <time>
+             {post.updatedAt}
+           </time>
+           <strong>
+           {post.title}
+           </strong>
+           <p>
+           {post.excerpt}
+           </p>
+         </a>
+         ))}
+       
         </div>
     </main>
    </>   
@@ -54,12 +48,23 @@ export default function Posts() {
 
 export async function getStaticProps({ previewData }:any) {
   const client = createClient({ previewData })
-
-  const page = await client.getSingle('post')
-  console.log(JSON.stringify(page, undefined, 2))
+  
+  const page = await client.getAllByType('post')
+  const posts = page.map((post)=>{
+    return{
+      slug: post.uid,
+      title: RichText.asText(post.data.title),
+      excerpt: post.data.content.find((content:any) => content.type = 'paragraph')?.text ?? '',
+      updatedAt: new Date(post.last_publication_date).toLocaleDateString('pt-BR',{
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric'
+      })
+    }
+  })
   return {
     props: {
-      page,
+      posts
     },
   }
 }
