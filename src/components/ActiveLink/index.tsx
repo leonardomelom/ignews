@@ -13,7 +13,7 @@ export function ActiveLink({children, activeClassName, ...rest}:ActiveLinkProps 
   ? activeClassName 
   : ''
     return(
-      <Link {...rest} prefetch>
+      <Link {...rest} >
         {cloneElement(children,{
           className,
         })}

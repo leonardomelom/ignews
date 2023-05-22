@@ -33,10 +33,10 @@
       &:hover {
         color: var(--white);
       }
-      &:active {
+      &.active {
         color: yellow;
       }
-      &:active::after {
+      &.active::after {
         content: "";
         height: 3px;
         border-radius: 3px 3px 0;
