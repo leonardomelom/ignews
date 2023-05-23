@@ -1,7 +1,7 @@
 import { GetStaticProps } from 'next'
 import Head from 'next/head'
 import styles from './styles.module.scss'
-import { createClient } from '../../services/prismic'
+import { getPrismicClient } from '../../services/prismic'
 import { RichText } from 'prismic-dom'
 import Link from 'next/link'
 
@@ -50,11 +50,10 @@ export default function Posts({ posts }: PostsProps) {
 
 
 export async function getStaticProps({ previewData }:any) {
-  const client = createClient({ previewData })
+  const client = getPrismicClient({ previewData })
   
   const page = await client.getAllByType('post')
   const posts = page.map((post)=>{
-    console.log(post.data.content)
     return{
       slug: post.uid,
       title: RichText.asText(post.data.title),

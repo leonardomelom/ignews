@@ -11,7 +11,7 @@ interface SubscribeButtonProps{
 priceId: string
 }
  export function SubscribeButton({priceId}:SubscribeButtonProps) {
-  const session = useSession()
+  const session:any = useSession()
   const router = useRouter()
   async function handleSubscribe(){
     if(!session.status){
@@ -19,7 +19,7 @@ priceId: string
         return
     } 
 
-    if(session.activeSubscription){
+    if(session?.activeSubscription){
       router.push('/posts')
       return
     }
